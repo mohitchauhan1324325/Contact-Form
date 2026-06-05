@@ -1,14 +1,24 @@
-import Contact from "../models/contact.js";
+import Contact from "../models/Contact.js";
 
 export const saveContact = async (req, res) => {
     try {
 
-        const { message } = req.body;
+        const {
+            name,
+            email,
+            message
+        } = req.body;
+
+        if (!name || !email || !message) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required",
+            });
+        }
 
         const contact = await Contact.create({
-            user: req.user.userId,
-            name: req.user.name,
-            email: req.user.email,
+            name,
+            email,
             message,
         });
 
@@ -18,6 +28,8 @@ export const saveContact = async (req, res) => {
         });
 
     } catch (error) {
+
+        console.log(error);
 
         res.status(500).json({
             success: false,

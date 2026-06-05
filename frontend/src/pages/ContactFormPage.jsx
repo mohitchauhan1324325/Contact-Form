@@ -1,24 +1,28 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { saveContact } from "../api/contact";
 
 const ContactFormPage = () => {
   const navigate = useNavigate();
 
-  const [message, setMessage] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
   const [success, setSuccess] = useState("");
 
   const user = JSON.parse(
     localStorage.getItem("user")
   );
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      navigate("/login");
-    }
-  }, [navigate]);
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,23 +30,25 @@ const ContactFormPage = () => {
     try {
 
       const response =
-        await saveContact({
-          message,
-        });
+        await saveContact(formData);
 
       if (response.success) {
 
         setSuccess(
-          "Message Submitted Successfully"
+          "Message Submitted Successfully "
         );
 
-        setMessage("");
+        setFormData({
+          name: "",
+          email: "",
+          message: "",
+        });
       }
 
     } catch (error) {
 
       setSuccess(
-        "Something went wrong"
+        "Something went wrong "
       );
 
       console.log(error);
@@ -59,7 +65,7 @@ const ContactFormPage = () => {
         </h1>
 
         <p className="text-center text-gray-500 mb-6">
-          Welcome {user?.name}
+          We'd love to hear from you.
         </p>
 
         <form
@@ -67,12 +73,29 @@ const ContactFormPage = () => {
           className="space-y-4"
         >
 
+          <input
+            type="text"
+            name="name"
+            placeholder="Enter Name"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full border rounded-lg p-3"
+          />
+
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter Email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full border rounded-lg p-3"
+          />
+
           <textarea
+            name="message"
             placeholder="Enter your message..."
-            value={message}
-            onChange={(e) =>
-              setMessage(e.target.value)
-            }
+            value={formData.message}
+            onChange={handleChange}
             rows={5}
             className="w-full border rounded-lg p-3"
           />
