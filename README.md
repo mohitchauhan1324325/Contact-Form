@@ -122,5 +122,3 @@ DELETE /api/contact/:id
 ## Author
 
 Mohit Chauhan
-
-"# Contact-Form" 
